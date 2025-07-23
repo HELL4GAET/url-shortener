@@ -6,19 +6,13 @@ import (
 	"URL-shortener/internal/usecase"
 	"URL-shortener/pkg/db"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	postgresConnectionString := os.Getenv("POSTGRES_CONNECTION_STRING")
+	postgresConnectionString := os.Getenv("DATABASE_URL")
 
 	storage, err := db.New(postgresConnectionString)
 	if err != nil {
