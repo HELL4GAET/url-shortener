@@ -46,16 +46,17 @@ func (u *URLRepo) IncrementClicks(ctx context.Context, alias string) error {
 	return err
 }
 
-func (u *URLRepo) GetStats(ctx context.Context, alias string) (int, time.Time, error) {
-	const query = `SELECT click_count, created_at FROM urls WHERE alias = $1`
+func (u *URLRepo) GetStats(ctx context.Context, alias string) (int, time.Time, string, error) {
+	const query = `SELECT click_count, created_at, original_url FROM urls WHERE alias = $1`
 	var clicks int
 	var createdAt time.Time
-	err := u.db.QueryRow(ctx, query, alias).Scan(&clicks, &createdAt)
+	var originalURL string
+	err := u.db.QueryRow(ctx, query, alias).Scan(&clicks, &createdAt, &originalURL)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return 0, time.Time{}, fmt.Errorf(`url with this short_code "%s" not found`, alias)
+			return 0, time.Time{}, "", fmt.Errorf(`url with this short_code "%s" not found`, alias)
 		}
-		return 0, time.Time{}, err
+		return 0, time.Time{}, "", err
 	}
-	return clicks, createdAt, nil
+	return clicks, createdAt, originalURL, nil
 }

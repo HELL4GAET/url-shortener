@@ -14,7 +14,7 @@ import (
 type URLService interface {
 	Shorten(ctx context.Context, originalURL string) (string, error)
 	Resolve(ctx context.Context, alias string) (string, error)
-	Stats(ctx context.Context, alias string) (int, time.Time, error)
+	Stats(ctx context.Context, alias string) (int, time.Time, string, error)
 }
 
 type URLHandler struct {
@@ -77,12 +77,7 @@ func (h *URLHandler) GetStats(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing short URL", http.StatusBadRequest)
 		return
 	}
-	clicks, createdAt, err := h.service.Stats(ctx, alias)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	originalURL, err := h.service.Resolve(ctx, alias)
+	clicks, createdAt, originalURL, err := h.service.Stats(ctx, alias)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -12,7 +12,7 @@ type URLRepository interface {
 	Save(ctx context.Context, originalURL, alias string) (string, error)
 	FindByCode(ctx context.Context, alias string) (string, error)
 	IncrementClicks(ctx context.Context, alias string) error
-	GetStats(ctx context.Context, alias string) (int, time.Time, error)
+	GetStats(ctx context.Context, alias string) (int, time.Time, string, error)
 }
 
 type URLService struct {
@@ -50,14 +50,12 @@ func (u *URLService) Resolve(ctx context.Context, alias string) (string, error) 
 	return originalURL, nil
 }
 
-func (u *URLService) Stats(ctx context.Context, alias string) (int, time.Time, error) {
-	var clicks int
-	var createdAt time.Time
-	clicks, createdAt, err := u.repo.GetStats(ctx, alias)
+func (u *URLService) Stats(ctx context.Context, alias string) (int, time.Time, string, error) {
+	clicks, createdAt, originalURL, err := u.repo.GetStats(ctx, alias)
 	if err != nil {
-		return 0, time.Time{}, fmt.Errorf("failed to get stats: %w", err)
+		return 0, time.Time{}, "", fmt.Errorf("failed to get stats: %w", err)
 	}
-	return clicks, createdAt, nil
+	return clicks, createdAt, originalURL, nil
 }
 
 func generateAlias() (string, error) {
