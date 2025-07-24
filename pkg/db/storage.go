@@ -15,10 +15,6 @@ func New(connectionString string) (*Storage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-	err = dbPool.Ping(context.Background())
-	if err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
-	}
 	return &Storage{db: dbPool}, nil
 }
 
