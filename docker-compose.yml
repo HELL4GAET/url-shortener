@@ -35,5 +35,17 @@ services:
       - db
     ports:
       - "${PORT}:${PORT}"
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: url-shortener-swagger
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs:ro
+    environment:
+      API_URL: /docs/openapi.yaml
+
+
 volumes:
   db_data:
